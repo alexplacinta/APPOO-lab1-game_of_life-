@@ -2,10 +2,13 @@ package app;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 
 public class Main {
 	
 	public static void main(String[] args) throws IOException {
+		Date begin = new Date();
+		
 		int indexI = Arrays.asList(args).indexOf("-i");
 		int indexN = Arrays.asList(args).indexOf("-n");
 		int indexO = Arrays.asList(args).indexOf("-o");
@@ -31,6 +34,6 @@ public class Main {
 		else
 			gameOfLife.outputGenerationInFile(args[indexO + 1]);
 		
-		
+		System.out.println("Finished in: " + (new Date().getTime() - begin.getTime())/1000 + " seconds.");
 	}
 }
