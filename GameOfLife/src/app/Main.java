@@ -7,7 +7,7 @@ import java.util.Date;
 public class Main {
 	
 	public static void main(String[] args) throws IOException {
-		Date begin = new Date();
+		long startTime = System.nanoTime();
 		
 		int indexI = Arrays.asList(args).indexOf("-i");
 		int indexN = Arrays.asList(args).indexOf("-n");
@@ -34,6 +34,7 @@ public class Main {
 		else
 			gameOfLife.outputGenerationInFile(args[indexO + 1]);
 		
-		System.out.println("Finished in: " + (new Date().getTime() - begin.getTime())/1000 + " seconds.");
+		long estimatedTime = System.nanoTime() - startTime;
+		System.out.println("Finished in: " + (double)estimatedTime / 1000000000.0 + " seconds.");
 	}
 }
