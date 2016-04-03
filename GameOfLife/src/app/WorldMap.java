@@ -1,6 +1,9 @@
 package app;
 
+import java.util.concurrent.*;
+
 public class WorldMap {
+	ExecutorService exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	
 	private TwoSizeBufferCellGrid buffer;
 
@@ -12,23 +15,37 @@ public class WorldMap {
 	}
 
 	public void evolve() {
-		CellGrid currentGrid = buffer.getCurrentCellGrid();
-		CellGrid anotherGrid = buffer.getAnotherCellGrid();
+		final CellGrid currentGrid = buffer.getCurrentCellGrid();
+		final CellGrid anotherGrid = buffer.getAnotherCellGrid();
 		
-		for (int i = 0; i < currentGrid.getYLength(); i++) {
-			for (int j = 0; j < currentGrid.getXLength(); j++) {
-				int aliveNeighbours = currentGrid.getNumAliveNeighbours(i, j);
-				
-				if ((aliveNeighbours < 2) || (aliveNeighbours > 3)) {
-					anotherGrid.setState(i, j, (byte)0);
-				} else if (aliveNeighbours == 3) {
-					anotherGrid.setState(i, j, (byte)1);
-				} else {
-					anotherGrid.setState(i, j, currentGrid.getState(i, j));
+		
+		try {
+			for (int i = 0; i < currentGrid.getYLength(); i++) {
+				for (int j = 0; j < currentGrid.getXLength(); j++) {
+					final int ii = i;
+					final int jj = j;
+					exec.submit(new Runnable() {
+			            @Override
+			            public void run() {
+			            	int aliveNeighbours = currentGrid.getNumAliveNeighbours(ii, jj);
+							
+							if ((aliveNeighbours < 2) || (aliveNeighbours > 3)) {
+								anotherGrid.setState(ii, jj, (byte)0);
+							} else if (aliveNeighbours == 3) {
+								anotherGrid.setState(ii, jj, (byte)1);
+							} else {
+								anotherGrid.setState(ii, jj, currentGrid.getState(ii, jj));
+							}
+			            }
+			        });
+					
 				}
 			}
-		}
 		
+		} finally {
+//			exec.shutdown();
+		}
+			
 		buffer.switchPointer();
 		
 	}
